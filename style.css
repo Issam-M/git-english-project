@@ -1,0 +1,270 @@
+/* Styles communs à toutes les pages */
+body {
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+a {
+    display: inline-block;
+    margin: 0.5px;
+    padding: 5px 3px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+a:hover {
+    background-color: #0056b3;
+}
+
+/* -------------------------------- */
+/* Styles spécifiques à la page vocabulaire */
+body.vocabulaire-page {
+    margin: 0;
+    padding-top: 70px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Barre de menu sur vocabulaire */
+body.vocabulaire-page nav {
+    width: 100%;
+    background-color: #007BFF;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+body.vocabulaire-page nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+body.vocabulaire-page nav ul li {
+    margin: 0 20px;
+}
+
+body.vocabulaire-page nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+body.vocabulaire-page nav ul li a:hover {
+    text-decoration: underline;
+}
+
+body.vocabulaire-page h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+body.vocabulaire-page table {
+    width: 80%;
+    max-width: 800px;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+body.vocabulaire-page th, 
+body.vocabulaire-page td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+body.vocabulaire-page th {
+    background-color: #007BFF;
+    color: white;
+}
+
+body.vocabulaire-page tr:last-child td {
+    border-bottom: none;
+}
+
+/* Style du bouton supprimer */
+body.vocabulaire-page .delete-btn {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+body.vocabulaire-page .delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Formulaire */
+body.vocabulaire-page form {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+body.vocabulaire-page form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-width: 200px;
+}
+
+body.vocabulaire-page form button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+body.vocabulaire-page form button:hover {
+    background-color: #218838;
+}
+
+body.vocabulaire-page a {
+    margin-top: 20px;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+body.vocabulaire-page a:hover {
+    text-decoration: underline;
+}
+
+/* -------------------------------- */
+/* Style spécifique à la page quiz */
+/* Par exemple (à adapter) */
+body.quiz-page {
+    background-color: #fffbea;
+    font-family: Arial, sans-serif;
+}
+
+body.quiz-page h1 {
+    color: #ff6600;
+}
+
+/* Tu peux ajouter d’autres styles spécifiques au quiz ici */
+
+/* -------------------------------- */
+/* Style spécifique à la page home */
+body.home-page {
+    background-color: white;
+}
+
+body.home-page h1 {
+    font-size: 3em;
+    color: darkblue;
+}
+
+body.quiz-page {
+    margin: 0;
+    padding-top: 70px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+body.quiz-page nav {
+    width: 100%;
+    background-color: #007BFF;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+body.quiz-page nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+body.quiz-page nav ul li {
+    margin: 0 20px;
+}
+
+body.quiz-page nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+body.quiz-page nav ul li a:hover {
+    text-decoration: underline;
+}
+
+body.quiz-page h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+body.quiz-page .quiz-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+}
+
+body.quiz-page input[type="text"] {
+    padding: 12px 15px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-size: 16px;
+}
+
+body.quiz-page button {
+    background-color: #007BFF;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+body.quiz-page button:hover {
+    background-color: #0056b3;
+}
+
+body.quiz-page .message {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+body.quiz-page .correct {
+    color: #28a745;
+}
+
+body.quiz-page .wrong {
+    color: #dc3545;
+}

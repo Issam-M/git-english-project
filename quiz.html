@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiz Anglais - Français</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="quiz-page">
+    <nav>
+        <ul>
+            <li><a href="homePage.html">Accueil</a></li>
+            <li><a href="vocabulaire.html">Vocabulaire</a></li>
+            <li><a href="quiz.html">Quiz</a></li>
+        </ul>
+    </nav>
+
+    <h1>📝 Quiz</h1>
+
+    <div class="quiz-container">
+        <label for="direction">Traduire :</label>
+        <select id="direction">
+            <option value="en-fr">Anglais → Français</option>
+            <option value="fr-en">Français → Anglais</option>
+        </select>
+
+        <div id="quizWord" style="font-size: 24px; font-weight: bold; margin-top: 10px;"></div>
+
+        <input type="text" id="userAnswer" placeholder="Écris la traduction" autocomplete="off" />
+
+        <button id="checkBtn">Vérifier</button>
+        <button id="nextBtn" style="display:none; margin-left:10px;">Mot suivant</button>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const directionSelect = document.getElementById('direction');
+        const quizWordDiv = document.getElementById('quizWord');
+        const userAnswerInput = document.getElementById('userAnswer');
+        const checkBtn = document.getElementById('checkBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const messageDiv = document.getElementById('message');
+
+        let words = JSON.parse(localStorage.getItem('vocabWords')) || [];
+        let currentIndex = -1;
+
+        function pickRandomWord() {
+            if (words.length === 0) {
+                quizWordDiv.textContent = "Ajoute d'abord des mots dans le vocabulaire !";
+                checkBtn.style.display = "none";
+                nextBtn.style.display = "none";
+                return null;
+            }
+            let index;
+            do {
+                index = Math.floor(Math.random() * words.length);
+            } while (index === currentIndex && words.length > 1);
+            currentIndex = index;
+            return words[index];
+        }
+
+        function displayWord(word) {
+            const direction = directionSelect.value;
+            quizWordDiv.textContent = (direction === 'en-fr') ? word.english : word.french;
+            userAnswerInput.value = '';
+            userAnswerInput.disabled = false;
+            checkBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+            messageDiv.textContent = '';
+            messageDiv.className = 'message';
+            userAnswerInput.focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = userAnswerInput.value.trim().toLowerCase();
+            const direction = directionSelect.value;
+            const correctAnswer = (direction === 'en-fr')
+                ? words[currentIndex].french.toLowerCase()
+                : words[currentIndex].english.toLowerCase();
+
+            if (userAnswer === '') {
+                messageDiv.textContent = 'Écris ta réponse avant de vérifier.';
+                messageDiv.className = 'message wrong';
+                return;
+            }
+
+            if (userAnswer === correctAnswer) {
+                messageDiv.textContent = '✅ Correct ! Bravo !';
+                messageDiv.className = 'message correct';
+            } else {
+                messageDiv.textContent = `❌ Faux. La bonne réponse est : "${correctAnswer}"`;
+                messageDiv.className = 'message wrong';
+            }
+
+            userAnswerInput.disabled = true;
+            checkBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
+        }
+
+        checkBtn.addEventListener('click', checkAnswer);
+
+        nextBtn.addEventListener('click', () => {
+            const nextWord = pickRandomWord();
+            if (nextWord) displayWord(nextWord);
+        });
+
+        directionSelect.addEventListener('change', () => {
+            const newWord = pickRandomWord();
+            if (newWord) displayWord(newWord);
+        });
+
+        const firstWord = pickRandomWord();
+        if (firstWord) displayWord(firstWord);
+    </script>
+</body>
+</html>

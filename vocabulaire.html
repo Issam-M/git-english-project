@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Vocabulaire Anglais</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="vocabulaire-page">
+    <nav>
+        <ul>
+            <li><a href="homePage.html">Accueil</a></li>
+            <li><a href="vocabulaire.html">Vocabulaire</a></li>
+            <li><a href="quiz.html">Quiz</a></li>
+        </ul>
+    </nav>
+
+    <h1>📚 Vocabulaire</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Anglais</th>
+                <th>Français</th>
+                <th>Exemple</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <h2>➕ Ajouter un mot</h2>
+    <form id="addWordForm">
+        <input type="text" id="english" placeholder="Mot en anglais" required />
+        <input type="text" id="french" placeholder="Traduction en français" required />
+        <input type="text" id="example" placeholder="Phrase d'exemple" required />
+        <button type="submit">Ajouter</button>
+        <button type="button" onclick="speakWord('hello')">🔊 Test audio</button>
+    </form>
+
+    <a href="index.html">⬅️ Retour à l'accueil</a>
+
+    <script>
+        // Ton code JavaScript ici (le même que tu as déjà)
+        const form = document.getElementById('addWordForm');
+        const tableBody = document.getElementById('tableBody');
+
+        function getWords() {
+            const words = localStorage.getItem('vocabWords');
+            return words ? JSON.parse(words) : [];
+        }
+
+        function saveWords(words) {
+            localStorage.setItem('vocabWords', JSON.stringify(words));
+        }
+
+        function displayWords() {
+            tableBody.innerHTML = '';
+            const words = getWords();
+
+            words.forEach((word, index) => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${word.english}</td>
+                    <td>${word.french}</td>
+                    <td>${word.example}</td>
+                    <td><button class="delete-btn" data-index="${index}">Supprimer</button></td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        tableBody.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-btn')) {
+                const index = e.target.getAttribute('data-index');
+                let words = getWords();
+                words.splice(index, 1);
+                saveWords(words);
+                displayWords();
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const english = document.getElementById('english').value.trim();
+            const french = document.getElementById('french').value.trim();
+            const example = document.getElementById('example').value.trim();
+
+            if (!english || !french || !example) {
+                alert('Tous les champs sont requis !');
+                return;
+            }
+
+            let words = getWords();
+            words.push({ english, french, example });
+            saveWords(words);
+            displayWords();
+
+            form.reset();
+        });
+
+        displayWords();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
