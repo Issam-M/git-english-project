@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Quiz Anglais - Français</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- Firebase compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 </head>
 <body class="quiz-page">
     <nav>
@@ -33,84 +36,108 @@
         <div id="message" class="message"></div>
     </div>
 
-    <script>
-        const directionSelect = document.getElementById('direction');
-        const quizWordDiv = document.getElementById('quizWord');
-        const userAnswerInput = document.getElementById('userAnswer');
-        const checkBtn = document.getElementById('checkBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const messageDiv = document.getElementById('message');
+<script>
+  // Config Firebase (même que dans vocabulaire)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCMUDjFISW_6u0t9GdMLx3lvdC9k7-MDZA",
+    authDomain: "english-project-272a8.firebaseapp.com",
+    databaseURL: "https://english-project-272a8-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "english-project-272a8",
+    storageBucket: "english-project-272a8.appspot.com",
+    messagingSenderId: "248230850925",
+    appId: "1:248230850925:web:574e9d6a1f4df889991d1c",
+    measurementId: "G-09D2ED5K0X"
+  };
 
-        let words = JSON.parse(localStorage.getItem('vocabWords')) || [];
-        let currentIndex = -1;
+  // Initialise Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-        function pickRandomWord() {
-            if (words.length === 0) {
-                quizWordDiv.textContent = "Ajoute d'abord des mots dans le vocabulaire !";
-                checkBtn.style.display = "none";
-                nextBtn.style.display = "none";
-                return null;
-            }
-            let index;
-            do {
-                index = Math.floor(Math.random() * words.length);
-            } while (index === currentIndex && words.length > 1);
-            currentIndex = index;
-            return words[index];
-        }
+  const directionSelect = document.getElementById('direction');
+  const quizWordDiv = document.getElementById('quizWord');
+  const userAnswerInput = document.getElementById('userAnswer');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const messageDiv = document.getElementById('message');
 
-        function displayWord(word) {
-            const direction = directionSelect.value;
-            quizWordDiv.textContent = (direction === 'en-fr') ? word.english : word.french;
-            userAnswerInput.value = '';
-            userAnswerInput.disabled = false;
-            checkBtn.style.display = 'inline-block';
-            nextBtn.style.display = 'none';
-            messageDiv.textContent = '';
-            messageDiv.className = 'message';
-            userAnswerInput.focus();
-        }
+  let words = [];
+  let currentIndex = -1;
 
-        function checkAnswer() {
-            const userAnswer = userAnswerInput.value.trim().toLowerCase();
-            const direction = directionSelect.value;
-            const correctAnswer = (direction === 'en-fr')
-                ? words[currentIndex].french.toLowerCase()
-                : words[currentIndex].english.toLowerCase();
+  // Charger les mots depuis Firebase une fois au démarrage
+  db.ref("words").once("value").then(snapshot => {
+    const data = snapshot.val();
+    words = data ? Object.values(data) : [];
 
-            if (userAnswer === '') {
-                messageDiv.textContent = 'Écris ta réponse avant de vérifier.';
-                messageDiv.className = 'message wrong';
-                return;
-            }
+    if (words.length === 0) {
+      quizWordDiv.textContent = "Ajoute d'abord des mots dans le vocabulaire !";
+      checkBtn.style.display = "none";
+      nextBtn.style.display = "none";
+    } else {
+      const firstWord = pickRandomWord();
+      if (firstWord) displayWord(firstWord);
+    }
+  });
 
-            if (userAnswer === correctAnswer) {
-                messageDiv.textContent = '✅ Correct ! Bravo !';
-                messageDiv.className = 'message correct';
-            } else {
-                messageDiv.textContent = `❌ Faux. La bonne réponse est : "${correctAnswer}"`;
-                messageDiv.className = 'message wrong';
-            }
+  function pickRandomWord() {
+    if (words.length === 0) return null;
+    let index;
+    do {
+      index = Math.floor(Math.random() * words.length);
+    } while (index === currentIndex && words.length > 1);
+    currentIndex = index;
+    return words[index];
+  }
 
-            userAnswerInput.disabled = true;
-            checkBtn.style.display = 'none';
-            nextBtn.style.display = 'inline-block';
-        }
+  function displayWord(word) {
+    const direction = directionSelect.value;
+    quizWordDiv.textContent = (direction === 'en-fr') ? word.english : word.french;
+    userAnswerInput.value = '';
+    userAnswerInput.disabled = false;
+    checkBtn.style.display = 'inline-block';
+    nextBtn.style.display = 'none';
+    messageDiv.textContent = '';
+    messageDiv.className = 'message';
+    userAnswerInput.focus();
+  }
 
-        checkBtn.addEventListener('click', checkAnswer);
+  function checkAnswer() {
+    const userAnswer = userAnswerInput.value.trim().toLowerCase();
+    const direction = directionSelect.value;
+    const correctAnswer = (direction === 'en-fr')
+      ? words[currentIndex].french.toLowerCase()
+      : words[currentIndex].english.toLowerCase();
 
-        nextBtn.addEventListener('click', () => {
-            const nextWord = pickRandomWord();
-            if (nextWord) displayWord(nextWord);
-        });
+    if (userAnswer === '') {
+      messageDiv.textContent = 'Écris ta réponse avant de vérifier.';
+      messageDiv.className = 'message wrong';
+      return;
+    }
 
-        directionSelect.addEventListener('change', () => {
-            const newWord = pickRandomWord();
-            if (newWord) displayWord(newWord);
-        });
+    if (userAnswer === correctAnswer) {
+      messageDiv.textContent = '✅ Correct ! Bravo !';
+      messageDiv.className = 'message correct';
+    } else {
+      messageDiv.textContent = `❌ Faux. La bonne réponse est : "${correctAnswer}"`;
+      messageDiv.className = 'message wrong';
+    }
 
-        const firstWord = pickRandomWord();
-        if (firstWord) displayWord(firstWord);
-    </script>
+    userAnswerInput.disabled = true;
+    checkBtn.style.display = 'none';
+    nextBtn.style.display = 'inline-block';
+  }
+
+  checkBtn.addEventListener('click', checkAnswer);
+
+  nextBtn.addEventListener('click', () => {
+    const nextWord = pickRandomWord();
+    if (nextWord) displayWord(nextWord);
+  });
+
+  directionSelect.addEventListener('change', () => {
+    const newWord = pickRandomWord();
+    if (newWord) displayWord(newWord);
+  });
+</script>
+
 </body>
 </html>

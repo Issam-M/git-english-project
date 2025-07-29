@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8" />
     <title>Vocabulaire Anglais</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- Inclure Firebase en mode compatibilité (pas d’erreur import/export) -->
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 </head>
+
 <body class="vocabulaire-page">
     <nav>
         <ul>
@@ -35,54 +40,53 @@
         <input type="text" id="french" placeholder="Traduction en français" required />
         <input type="text" id="example" placeholder="Phrase d'exemple" required />
         <button type="submit">Ajouter</button>
-        <button type="button" onclick="speakWord('hello')">🔊 Test audio</button>
     </form>
 
     <a href="index.html">⬅️ Retour à l'accueil</a>
 
     <script>
-        // Ton code JavaScript ici (le même que tu as déjà)
+        // Configuration Firebase (idem que dans ta console Firebase)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMUDjFISW_6u0t9GdMLx3lvdC9k7-MDZA",
+            authDomain: "english-project-272a8.firebaseapp.com",
+            databaseURL: "https://english-project-272a8-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "english-project-272a8",
+            storageBucket: "english-project-272a8.appspot.com",
+            messagingSenderId: "248230850925",
+            appId: "1:248230850925:web:574e9d6a1f4df889991d1c",
+            measurementId: "G-09D2ED5K0X"
+        };
+
+        // Initialiser Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         const form = document.getElementById('addWordForm');
         const tableBody = document.getElementById('tableBody');
 
-        function getWords() {
-            const words = localStorage.getItem('vocabWords');
-            return words ? JSON.parse(words) : [];
-        }
-
-        function saveWords(words) {
-            localStorage.setItem('vocabWords', JSON.stringify(words));
-        }
-
+        // Afficher les mots depuis Firebase
         function displayWords() {
-            tableBody.innerHTML = '';
-            const words = getWords();
+            db.ref("words").on("value", snapshot => {
+                tableBody.innerHTML = '';
+                const data = snapshot.val();
+                if (!data) return;
 
-            words.forEach((word, index) => {
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>${word.english}</td>
-                    <td>${word.french}</td>
-                    <td>${word.example}</td>
-                    <td><button class="delete-btn" data-index="${index}">Supprimer</button></td>
-                `;
-
-                tableBody.appendChild(row);
+                Object.keys(data).forEach(key => {
+                    const word = data[key];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${word.english}</td>
+                        <td>${word.french}</td>
+                        <td>${word.example}</td>
+                        <td><button class="delete-btn" data-id="${key}">Supprimer</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
             });
         }
 
-        tableBody.addEventListener('click', function(e) {
-            if (e.target.classList.contains('delete-btn')) {
-                const index = e.target.getAttribute('data-index');
-                let words = getWords();
-                words.splice(index, 1);
-                saveWords(words);
-                displayWords();
-            }
-        });
-
-        form.addEventListener('submit', function(e) {
+        // Ajouter un mot
+        form.addEventListener('submit', e => {
             e.preventDefault();
 
             const english = document.getElementById('english').value.trim();
@@ -94,16 +98,21 @@
                 return;
             }
 
-            let words = getWords();
-            words.push({ english, french, example });
-            saveWords(words);
-            displayWords();
-
+            db.ref('words').push({ english, french, example });
             form.reset();
         });
 
+        // Supprimer un mot
+        tableBody.addEventListener('click', e => {
+            if (e.target.classList.contains('delete-btn')) {
+                const id = e.target.getAttribute('data-id');
+                db.ref('words/' + id).remove();
+            }
+        });
+
+        // Charger au départ
         displayWords();
     </script>
-    <script src="script.js"></script>
 </body>
+
 </html>
