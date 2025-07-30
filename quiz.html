@@ -65,8 +65,11 @@
 
   // Charger les mots depuis Firebase une fois au démarrage
   db.ref("words").once("value").then(snapshot => {
-    const data = snapshot.val();
-    words = data ? Object.values(data) : [];
+  const data = snapshot.val();
+  words = data
+    ? Object.values(data).filter(word => !word.known) // pourg garder seulement ceux non cochés
+    : [];
+
 
     if (words.length === 0) {
       quizWordDiv.textContent = "Ajoute d'abord des mots dans le vocabulaire !";

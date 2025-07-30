@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <title>Vocabulaire Anglais</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Inclure Firebase en mode compatibilité (pas d’erreur import/export) -->
+    <!-- Firebase compatibilité -->
     <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-database-compat.js"></script>
 </head>
@@ -24,14 +24,15 @@
     <table>
         <thead>
             <tr>
+                <th>🔊</th> 
                 <th>Anglais</th>
                 <th>Français</th>
                 <th>Exemple</th>
+                <th>Acquis</th>
                 <th class="action-column">Action</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
-        </tbody>
+        <tbody id="tableBody"></tbody>
     </table>
 
     <h2>➕ Ajouter un mot</h2>
@@ -46,7 +47,6 @@
     <a href="index.html">⬅️ Retour à l'accueil</a>
 
     <script>
-        // Configuration Firebase (idem que dans ta console Firebase)
         const firebaseConfig = {
             apiKey: "AIzaSyCMUDjFISW_6u0t9GdMLx3lvdC9k7-MDZA",
             authDomain: "english-project-272a8.firebaseapp.com",
@@ -58,14 +58,13 @@
             measurementId: "G-09D2ED5K0X"
         };
 
-        // Initialiser Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         const form = document.getElementById('addWordForm');
         const tableBody = document.getElementById('tableBody');
 
-        // Afficher les mots depuis Firebase
+        // Affiche les mots depuis Firebase
         function displayWords() {
             db.ref("words").on("value", snapshot => {
                 tableBody.innerHTML = '';
@@ -76,24 +75,28 @@
                     const word = data[key];
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                    <td>${word.english}</td>
+                       <td>
+                            <button class="speak-btn" data-word="${word.english}">🔊</button>
+                       </td>
+                        <td>${word.english}</td>
                         <td>${word.french}</td>
-                        <td>${word.example}</td>
+                        <td>${word.example || ''}</td>
+                        <td>
+                            <input type="checkbox" class="known-checkbox" data-id="${key}" ${word.known ? 'checked' : ''} />
+                        </td>
                         <td class="action-column">
                             <div class="action-buttons">
-                            <button class="speak-btn" data-word="${word.english}">🔊</button>
-                            <button class="edit-btn" data-id="${key}">Modifier</button>
-                            <button class="delete-btn" data-id="${key}">Supprimer</button>
+                                <button class="edit-btn" data-id="${key}">Modifier</button>
+                                <button class="delete-btn" data-id="${key}">Supprimer</button>
                             </div>
                         </td>
                     `;
-
                     tableBody.appendChild(row);
                 });
             });
         }
 
-        // Ajouter un mot
+        // Gérer l'ajout ou la modification
         form.addEventListener('submit', e => {
             e.preventDefault();
 
@@ -107,28 +110,27 @@
             }
 
             const editId = form.getAttribute('data-edit-id');
-            const wordData = { english, french, example };
+            const wordData = { english, french, example, known: false };
 
             if (editId) {
-                // Mise à jour du mot existant
                 db.ref('words/' + editId).update(wordData);
                 form.removeAttribute('data-edit-id');
                 form.querySelector('button[type="submit"]').textContent = 'Ajouter';
             } else {
-                // Ajout d’un nouveau mot
                 db.ref('words').push(wordData);
             }
 
             form.reset();
+            document.getElementById('cancelEditBtn').style.display = 'none';
         });
 
-
-        // Supprimer un mot
+        // Écoute des clics sur les boutons d’action
         tableBody.addEventListener('click', e => {
             if (e.target.classList.contains('delete-btn')) {
                 const id = e.target.getAttribute('data-id');
                 db.ref('words/' + id).remove();
             }
+
             if (e.target.classList.contains('edit-btn')) {
                 const id = e.target.getAttribute('data-id');
                 db.ref('words/' + id).once('value', snapshot => {
@@ -144,26 +146,40 @@
                 });
             }
 
-        });
-
-        // Charger au départ
-        displayWords();
-
-        // Prononcer le mot en anglais
-        tableBody.addEventListener('click', e => {
             if (e.target.classList.contains('speak-btn')) {
                 const word = e.target.getAttribute('data-word');
                 speakWord(word);
             }
         });
 
+        // Coche "acquis"
+        tableBody.addEventListener('change', e => {
+            if (e.target.classList.contains('known-checkbox')) {
+                const id = e.target.getAttribute('data-id');
+                const isKnown = e.target.checked;
+                db.ref('words/' + id).update({ known: isKnown });
+            }
+        });
+
+        // Bouton Annuler
         document.getElementById('cancelEditBtn').addEventListener('click', () => {
             form.reset();
             form.removeAttribute('data-edit-id');
             form.querySelector('button[type="submit"]').textContent = 'Ajouter';
             document.getElementById('cancelEditBtn').style.display = 'none';
         });
+
+        // Fonction de prononciation
+        function speakWord(word) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+
+        // Charger au démarrage
+        displayWords();
     </script>
+
     <script src="script.js"></script>
 </body>
 
