@@ -75,11 +75,15 @@
                     const word = data[key];
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${word.english}</td>
+                    <td>${word.english}</td>
                         <td>${word.french}</td>
                         <td>${word.example}</td>
-                        <td><button class="delete-btn" data-id="${key}">Supprimer</button></td>
+                        <td>
+                            <button class="speak-btn" data-word="${word.english}">🔊</button>
+                            <button class="delete-btn" data-id="${key}">Supprimer</button>
+                        </td>
                     `;
+
                     tableBody.appendChild(row);
                 });
             });
@@ -112,7 +116,17 @@
 
         // Charger au départ
         displayWords();
+
+        // Prononcer le mot en anglais
+        tableBody.addEventListener('click', e => {
+            if (e.target.classList.contains('speak-btn')) {
+                const word = e.target.getAttribute('data-word');
+                speakWord(word);
+            }
+        });
+
     </script>
+    <script src="script.js"></script>
 </body>
 
 </html>

@@ -1,9 +1,12 @@
 // fonction de prononciation globale (une seule fois !) ok 
 function speakWord(word) {
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = 'en-US';
-    speechSynthesis.speak(utterance);
-}
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        speechSynthesis.speak(utterance);
+    } else {
+        alert("La synthèse vocale n'est pas supportée sur ce navigateur.");
+    }}
 
 // génération simple d'une phrase exemple ok
 function generateExample(word) {
@@ -31,7 +34,7 @@ function displayWords() {
         row.innerHTML = `
             <td>
                 ${word.english}
-                <button onclick="speakWord('${word.english}')" style="margin-left:8px;">🔊</button>
+                <button onclick="speakWord(&quot;${word.english}&quot;)" style="margin-left:8px;">🔊</button>
             </td>
             <td>${word.french}</td>
             <td>${word.example}</td>
