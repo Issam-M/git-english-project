@@ -268,3 +268,59 @@ body.quiz-page .correct {
 body.quiz-page .wrong {
     color: #dc3545;
 }
+
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+td, th {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;         /* espace entre boutons */
+  justify-content: center;  /* centrer horizontalement */
+  align-items: center;      /* aligner verticalement */
+}
+
+.action-buttons button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.speak-btn {
+  background-color: #e0e0e0;
+}
+
+.edit-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+/* colonne action*/
+.action-column {
+  min-width: 190px; /*largeur*/
+  width: 180px;
+}
+
+/* acion bouton*/
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; /* c pour empêcher le retour à la ligne */
+}
+
+

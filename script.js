@@ -23,24 +23,24 @@ function generateExample(word) {
 }
 
 // fonction d'affichage des mots ok
-function displayWords() {
-    const tableBody = document.getElementById('tableBody');
-    const words = getWords();
-    tableBody.innerHTML = '';
+// function displayWords() {
+//     const tableBody = document.getElementById('tableBody');
+//     const words = getWords();
+//     tableBody.innerHTML = '';
 
-    words.forEach((word, index) => {
-        const row = document.createElement('tr');
+//     words.forEach((word, index) => {
+//         const row = document.createElement('tr');
 
-        row.innerHTML = `
-            <td>
-                ${word.english}
-                <button onclick="speakWord(&quot;${word.english}&quot;)" style="margin-left:8px;">🔊</button>
-            </td>
-            <td>${word.french}</td>
-            <td>${word.example}</td>
-            <td><button class="delete-btn" data-index="${index}">Supprimer</button></td>
-        `;
+//         row.innerHTML = `
+//             <td>
+//                 ${word.english}
+//                 <button onclick="speakWord(&quot;${word.english}&quot;)" style="margin-left:8px;">🔊</button>
+//             </td>
+//             <td>${word.french}</td>
+//             <td>${word.example}</td>
+//             <td><button class="delete-btn" data-index="${index}">Supprimer</button></td>
+//         `;
 
-        tableBody.appendChild(row);
-    });
-}
+//         tableBody.appendChild(row);
+//     });
+//}

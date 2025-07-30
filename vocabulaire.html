@@ -27,7 +27,7 @@
                 <th>Anglais</th>
                 <th>Français</th>
                 <th>Exemple</th>
-                <th>Action</th>
+                <th class="action-column">Action</th>
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -38,8 +38,9 @@
     <form id="addWordForm">
         <input type="text" id="english" placeholder="Mot en anglais" required />
         <input type="text" id="french" placeholder="Traduction en français" required />
-        <input type="text" id="example" placeholder="Phrase d'exemple" required />
+        <input type="text" id="example" placeholder="Phrase d'exemple" />
         <button type="submit">Ajouter</button>
+        <button type="button" id="cancelEditBtn" style="display: none;">Annuler</button>
     </form>
 
     <a href="index.html">⬅️ Retour à l'accueil</a>
@@ -78,9 +79,12 @@
                     <td>${word.english}</td>
                         <td>${word.french}</td>
                         <td>${word.example}</td>
-                        <td>
+                        <td class="action-column">
+                            <div class="action-buttons">
                             <button class="speak-btn" data-word="${word.english}">🔊</button>
+                            <button class="edit-btn" data-id="${key}">Modifier</button>
                             <button class="delete-btn" data-id="${key}">Supprimer</button>
+                            </div>
                         </td>
                     `;
 
@@ -97,14 +101,27 @@
             const french = document.getElementById('french').value.trim();
             const example = document.getElementById('example').value.trim();
 
-            if (!english || !french || !example) {
-                alert('Tous les champs sont requis !');
+            if (!english || !french) {
+                alert('Les champs anglais et français sont obligatoires !');
                 return;
             }
 
-            db.ref('words').push({ english, french, example });
+            const editId = form.getAttribute('data-edit-id');
+            const wordData = { english, french, example };
+
+            if (editId) {
+                // Mise à jour du mot existant
+                db.ref('words/' + editId).update(wordData);
+                form.removeAttribute('data-edit-id');
+                form.querySelector('button[type="submit"]').textContent = 'Ajouter';
+            } else {
+                // Ajout d’un nouveau mot
+                db.ref('words').push(wordData);
+            }
+
             form.reset();
         });
+
 
         // Supprimer un mot
         tableBody.addEventListener('click', e => {
@@ -112,6 +129,21 @@
                 const id = e.target.getAttribute('data-id');
                 db.ref('words/' + id).remove();
             }
+            if (e.target.classList.contains('edit-btn')) {
+                const id = e.target.getAttribute('data-id');
+                db.ref('words/' + id).once('value', snapshot => {
+                    const word = snapshot.val();
+
+                    document.getElementById('english').value = word.english;
+                    document.getElementById('french').value = word.french;
+                    document.getElementById('example').value = word.example || '';
+
+                    form.setAttribute('data-edit-id', id);
+                    form.querySelector('button[type="submit"]').textContent = 'Modifier le mot';
+                    document.getElementById('cancelEditBtn').style.display = 'inline-block';
+                });
+            }
+
         });
 
         // Charger au départ
@@ -125,6 +157,12 @@
             }
         });
 
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            form.reset();
+            form.removeAttribute('data-edit-id');
+            form.querySelector('button[type="submit"]').textContent = 'Ajouter';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        });
     </script>
     <script src="script.js"></script>
 </body>
