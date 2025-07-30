@@ -20,11 +20,12 @@
     </nav>
 
     <h1>📚 Vocabulaire</h1>
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher un mot..." style="margin: 20px 0; padding: 8px; width: 60%; font-size: 16px;" />
 
     <table>
         <thead>
             <tr>
-                <th>🔊</th> 
+                <th>🔊</th>
                 <th>Anglais</th>
                 <th>Français</th>
                 <th>Exemple</th>
@@ -95,6 +96,24 @@
                 });
             });
         }
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            const rows = tableBody.getElementsByTagName('tr');
+
+            for (let row of rows) {
+                const english = row.cells[1]?.textContent.toLowerCase() || '';
+                const french = row.cells[2]?.textContent.toLowerCase() || '';
+                const example = row.cells[3]?.textContent.toLowerCase() || '';
+
+                if (english.includes(filter) || french.includes(filter) || example.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+
 
         // Gérer l'ajout ou la modification
         form.addEventListener('submit', e => {
